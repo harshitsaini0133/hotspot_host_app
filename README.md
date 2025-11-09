@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+
 # Hotspot Host Onboarding Questionnaire
 
 This Flutter project is an onboarding questionnaire designed to assess the suitability of potential hosts for a social platform. The application consists of two main screens that gather information about the applicant's hosting preferences and motivations.
