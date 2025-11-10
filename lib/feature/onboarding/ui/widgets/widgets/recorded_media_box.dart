@@ -98,7 +98,7 @@ class _RecordedMediaBoxState extends State<RecordedMediaBox>
             children: [
               _buildHeader(),
               AppDimensions.spacingMedium,
-              if (isAudio && isMediaRecorded) ...[_buildControls()],
+              if (isAudio) ...[_buildControls()],
             ],
           ),
         ),
