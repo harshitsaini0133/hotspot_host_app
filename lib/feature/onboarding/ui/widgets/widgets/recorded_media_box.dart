@@ -1,12 +1,13 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intern_assignment/core/api_constants.dart';
 import 'package:intern_assignment/core/app_color_pallete.dart';
 import 'package:intern_assignment/core/app_dimensions.dart';
+import 'package:intern_assignment/feature/onboarding/ui/widgets/widgets/video_player_screen.dart';
 import 'package:intern_assignment/feature/onboarding/ui/widgets/timer_display.dart';
 import 'package:intern_assignment/feature/onboarding/ui/widgets/wave_form_bar.dart';
-
 
 class RecordedMediaBox extends StatefulWidget {
   final bool isRecording;
@@ -17,6 +18,7 @@ class RecordedMediaBox extends StatefulWidget {
   final VoidCallback onStop;
   final VoidCallback onPlayPause;
   final VoidCallback onDelete;
+  final String videoPath;
 
   const RecordedMediaBox({
     super.key,
@@ -28,6 +30,7 @@ class RecordedMediaBox extends StatefulWidget {
     required this.onPlayPause,
     required this.onDelete,
     this.videoThumbnailPath,
+    required this.videoPath,
   });
 
   @override
@@ -84,19 +87,9 @@ class _RecordedMediaBoxState extends State<RecordedMediaBox>
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           decoration: BoxDecoration(
-            // image: isVideo && widget.videoThumbnailPath != null
-            //     ? DecorationImage(
-            //         image: FileImage(File(widget.videoThumbnailPath!)),
-            //         fit: BoxFit.cover,
-            //         colorFilter: ColorFilter.mode(
-            //           AppColorPallete.base3,
-            //           BlendMode.darken,
-            //         ),
-            //       )
-            //     : null,
-            gradient:  AppColorPallete.cardBG ,
+            gradient: AppColorPallete.cardBG,
             borderRadius: const BorderRadius.all(Radius.circular(8)),
             border: Border.all(color: AppColorPallete.text5, width: 1),
           ),
@@ -105,7 +98,7 @@ class _RecordedMediaBoxState extends State<RecordedMediaBox>
             children: [
               _buildHeader(),
               AppDimensions.spacingMedium,
-              _buildControls(),
+              if (isAudio && isMediaRecorded) ...[_buildControls()],
             ],
           ),
         ),
@@ -119,8 +112,43 @@ class _RecordedMediaBoxState extends State<RecordedMediaBox>
         : 'Recorded ${isAudio ? 'Audio' : 'Video'}•';
 
     return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        if (isVideo && isMediaRecorded) ...[
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => VideoPlayerScreen(
+                    videoPath: widget.videoPath,
+                  ),
+                ),
+              );
+            },
+            child: AnimatedContainer(
+                margin: const EdgeInsets.only(right: 8),
+                height: 60,
+                width: 60,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  image: isVideo && widget.videoThumbnailPath != null
+                      ? DecorationImage(
+                          image: FileImage(File(widget.videoThumbnailPath!)),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                ),
+                child: widget.videoThumbnailPath != null
+                    ? const Center(
+                        child: Icon(Icons.play_arrow_outlined,
+                            color: Colors.white))
+                    : null),
+          ),
+        ],
         Text(
           statusText,
           style: const TextStyle(
@@ -140,7 +168,6 @@ class _RecordedMediaBoxState extends State<RecordedMediaBox>
               );
             },
           ),
-          const Spacer(),
           IconButton(
             onPressed: widget.onDelete,
             icon: const Icon(
@@ -170,16 +197,13 @@ class _RecordedMediaBoxState extends State<RecordedMediaBox>
                     : Icons.play_arrow),
           ),
         ),
-        if (isAudio)
-          Expanded(
-            child: WaveformBar(
-              barCount: isMediaRecorded ? 45 : 30,
-              isPlaying: widget.isPlaying,
-              isRecording: widget.isRecording,
-            ),
+        Expanded(
+          child: WaveformBar(
+            barCount: isMediaRecorded ? 45 : 30,
+            isPlaying: widget.isPlaying,
+            isRecording: widget.isRecording,
           ),
-        if (isVideo && isMediaRecorded)
-          const Spacer(), // For video, just show a play button and timer
+        ),
         if (widget.isRecording) ...[
           const SizedBox(width: 8),
           TimerDisplay(seconds: widget.seconds),

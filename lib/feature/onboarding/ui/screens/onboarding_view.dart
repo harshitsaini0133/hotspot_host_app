@@ -10,7 +10,7 @@ import 'package:intern_assignment/global_widgets/custom_app_bar.dart';
 import 'package:intern_assignment/global_widgets/custom_button.dart';
 import 'package:intern_assignment/global_widgets/custom_form_field.dart';
 import 'package:intern_assignment/feature/onboarding/ui/bloc/onboarding_bloc.dart';
-import 'package:intern_assignment/feature/onboarding/ui/widgets/recorded_media_box.dart';
+import 'package:intern_assignment/feature/onboarding/ui/widgets/widgets/recorded_media_box.dart';
 import 'package:intern_assignment/feature/onboarding/ui/widgets/recording_button.dart';
 
 class OnboardingView extends StatelessWidget {
